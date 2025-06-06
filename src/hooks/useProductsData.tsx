@@ -39,7 +39,7 @@ export function useProductData() {
     category: gear.category.name,
     rating: Number(gear.rating),
     price: Number(gear.price),
-    image: gear.image,
+    image: gear.imageUrl,
     brand: gear.brand,
     inStock: gear.inStock,
   });
