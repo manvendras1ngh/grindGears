@@ -2,6 +2,7 @@ import { useState, useContext, createContext, useEffect } from "react";
 import type { ProductData, CartItem } from "../utils/types";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useProductData } from "@/hooks/useProductsData";
 
 type StoreContextType = {
   cartItems: CartItem[];
@@ -32,6 +33,8 @@ export function StoreContextProvider({
   const cartUrl = "http://localhost:5175/api/v1/cart";
   const wishlistUrl = "http://localhost:5175/api/v1/wishlist";
 
+  const { productData } = useProductData();
+
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistItems, setWishlistItems] = useState<ProductData[]>([]);
 
@@ -46,10 +49,27 @@ export function StoreContextProvider({
         console.error("Error getting cart items", error);
       }
     })();
-  }, [cartItems, wishlistItems]);
+  }, []);
 
   const handleAddToCart = async (data: ProductData, quantity = 1) => {
     try {
+      if (!data.inStock) {
+        toast.error("Gear out of stock");
+        return;
+      }
+
+      setCartItems((prev) => {
+        const exists = prev.some((gear) => gear.id === data.id);
+        if (exists) {
+          return prev.map((gear) =>
+            gear.id === data.id
+              ? { ...gear, quantity: gear.quantity + 1 }
+              : gear
+          );
+        } else {
+          return [...prev, { ...data, quantity: 1 }];
+        }
+      });
       const res = await axios.post(`${cartUrl}/add`, {
         gearId: data.id,
         quantity: quantity,
@@ -64,6 +84,9 @@ export function StoreContextProvider({
 
   const handleRemoveFromCart = async (id: string) => {
     try {
+      const removeGear = cartItems.filter((gear) => gear.id !== id);
+      setCartItems(removeGear);
+
       const res = await axios.delete(`${cartUrl}/remove`, {
         data: { gearId: id },
       });
@@ -78,6 +101,13 @@ export function StoreContextProvider({
 
   const handleAddToWishlist = async (id: string) => {
     try {
+      const getGear = productData.find((gear) => gear.id === id);
+      if (!getGear) {
+        toast.error("Gear not found");
+        return;
+      }
+      setWishlistItems((prev) => [...prev, getGear]);
+
       const res = await axios.post(`${wishlistUrl}/add`, { gearId: id });
       toast.success(res.data.message);
     } catch (error: any) {
@@ -92,6 +122,7 @@ export function StoreContextProvider({
     try {
       const updatedGears = wishlistItems.filter((item) => item.id !== id);
       setWishlistItems(updatedGears);
+
       const res = await axios.delete(`${wishlistUrl}/remove`, {
         data: { gearId: id },
       });
