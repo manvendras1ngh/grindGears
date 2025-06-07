@@ -1,24 +1,22 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import type { ProductData } from "../utils/types";
-import { categoriesApiUrl } from "@/components/Landing";
 import { useParams } from "react-router-dom";
+import { categoriesApiEndpoint, productsApiEndpoint } from "@/utils/apiRoute";
 
 export function useProductData() {
-  const productUrl = "http://localhost:5175/api/v1/gears";
-
   const { slug } = useParams();
 
   const [productData, setProductData] = useState<ProductData[] | []>([]);
   const [productDataLoading, setProductDataLoading] = useState(false);
 
-  console.log("product hook");
-
   useEffect(() => {
     const getData = async () => {
       setProductDataLoading(true);
       try {
-        const endpoint = slug ? `${categoriesApiUrl}/slug/${slug}` : productUrl;
+        const endpoint = slug
+          ? `${categoriesApiEndpoint}/slug/${slug}`
+          : productsApiEndpoint;
 
         const productsRes = await axios.get(endpoint);
 

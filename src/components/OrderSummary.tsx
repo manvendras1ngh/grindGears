@@ -8,6 +8,11 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import useStoreContext from "../contexts/CartContext";
 import type { CartItem } from "../utils/types";
+import {
+  addressApiEndpoint,
+  clearCartApiEndpoint,
+  orderApiEndpoint,
+} from "@/utils/apiRoute";
 
 interface Address {
   _id: string;
@@ -30,14 +35,10 @@ export function OrderSummary() {
     phone: "+91-9919395979",
   };
 
-  const addressUrl = "http://localhost:5175/api/v1/address";
-  const orderUrl = "http://localhost:5175/api/v1/orders";
-  const clearCartUrl = "http://localhost:5175/api/v1/cart/clear";
-
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const res = await axios.get(addressUrl);
+        const res = await axios.get(addressApiEndpoint);
         setAddresses(res.data.data);
 
         if (res.data.data.length > 0) {
@@ -91,12 +92,12 @@ export function OrderSummary() {
         shippingAddress: selectedAddress,
       };
 
-      await axios.post(orderUrl, orderData);
+      await axios.post(orderApiEndpoint, orderData);
 
       toast.success("Order placed successfully!");
 
       setTimeout(async () => {
-        await axios.delete(clearCartUrl);
+        await axios.delete(clearCartApiEndpoint);
         navigate("/products");
       }, 3000);
     } catch (error: any) {

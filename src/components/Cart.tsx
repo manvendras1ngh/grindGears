@@ -6,6 +6,7 @@ import { Navbar } from "./Navbar";
 import type { CartItem } from "../utils/types";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { cartUpdateEndpoint } from "@/utils/apiRoute";
 
 export function Cart() {
   const {
@@ -16,9 +17,11 @@ export function Cart() {
   } = useStoreContext();
 
   const handleQuantityChange = async (id: string, newQuantity: number) => {
-    const url = "http://localhost:5175/api/v1/cart/update";
     try {
-      const res = await axios.post(url, { gearId: id, quantity: newQuantity });
+      const res = await axios.post(cartUpdateEndpoint, {
+        gearId: id,
+        quantity: newQuantity,
+      });
       toast.success(res.data.message);
     } catch (error: any) {
       const msg = error.response?.data?.message || "Error updating gear";

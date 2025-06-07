@@ -3,6 +3,7 @@ import type { ProductData, CartItem } from "../utils/types";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useProductData } from "@/hooks/useProductsData";
+import { cartApiEndpoint, wishlistApiEndpoint } from "@/utils/apiRoute";
 
 type StoreContextType = {
   cartItems: CartItem[];
@@ -30,9 +31,6 @@ export function StoreContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const cartUrl = "http://localhost:5175/api/v1/cart";
-  const wishlistUrl = "http://localhost:5175/api/v1/wishlist";
-
   const { productData } = useProductData();
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -41,8 +39,8 @@ export function StoreContextProvider({
   useEffect(() => {
     (async () => {
       try {
-        const cartRes = await axios.get(cartUrl);
-        const wishlistRes = await axios.get(wishlistUrl);
+        const cartRes = await axios.get(cartApiEndpoint);
+        const wishlistRes = await axios.get(wishlistApiEndpoint);
         setCartItems(cartRes.data.data);
         setWishlistItems(wishlistRes.data.data);
       } catch (error) {
@@ -70,7 +68,7 @@ export function StoreContextProvider({
           return [...prev, { ...data, quantity: 1 }];
         }
       });
-      const res = await axios.post(`${cartUrl}/add`, {
+      const res = await axios.post(`${cartApiEndpoint}/add`, {
         gearId: data.id,
         quantity: quantity,
       });
@@ -87,7 +85,7 @@ export function StoreContextProvider({
       const removeGear = cartItems.filter((gear) => gear.id !== id);
       setCartItems(removeGear);
 
-      const res = await axios.delete(`${cartUrl}/remove`, {
+      const res = await axios.delete(`${cartApiEndpoint}/remove`, {
         data: { gearId: id },
       });
       toast.success(res.data.message);
@@ -108,7 +106,9 @@ export function StoreContextProvider({
       }
       setWishlistItems((prev) => [...prev, getGear]);
 
-      const res = await axios.post(`${wishlistUrl}/add`, { gearId: id });
+      const res = await axios.post(`${wishlistApiEndpoint}/add`, {
+        gearId: id,
+      });
       toast.success(res.data.message);
     } catch (error: any) {
       const message =
@@ -123,7 +123,7 @@ export function StoreContextProvider({
       const updatedGears = wishlistItems.filter((item) => item.id !== id);
       setWishlistItems(updatedGears);
 
-      const res = await axios.delete(`${wishlistUrl}/remove`, {
+      const res = await axios.delete(`${wishlistApiEndpoint}/remove`, {
         data: { gearId: id },
       });
       toast.success(res.data.message);

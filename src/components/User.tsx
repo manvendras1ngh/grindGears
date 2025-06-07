@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { Navbar } from "./Navbar";
 import { AddressForm } from "./AddressForm";
+import { addressApiEndpoint, orderApiEndpoint } from "@/utils/apiRoute";
 
 interface Order {
   _id: string;
@@ -32,8 +33,7 @@ export function User() {
     phone: "+91-9919395979",
     avatar: "https://placehold.co/400x500/e2e8f0/1e293b?text=MS",
   };
-  const orderUrl = "http://localhost:5175/api/v1/orders";
-  const addressUrl = "http://localhost:5175/api/v1/address";
+
   const [address, setAddress] = useState([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -42,7 +42,7 @@ export function User() {
   useEffect(() => {
     (async () => {
       try {
-        const addressRes = await axios.get(addressUrl);
+        const addressRes = await axios.get(addressApiEndpoint);
         setAddress(addressRes.data.data || []);
       } catch (error) {
         console.error("Error getting addresses", error);
@@ -50,7 +50,7 @@ export function User() {
     })();
     (async () => {
       try {
-        const res = await axios.get(orderUrl);
+        const res = await axios.get(orderApiEndpoint);
         setOrders(res.data.data || []);
       } catch (error) {
         console.error("Error getting orders");
@@ -62,7 +62,7 @@ export function User() {
 
   const handleDeleteAddress = async (id: string) => {
     try {
-      await axios.delete(addressUrl, { data: { id: id } });
+      await axios.delete(addressApiEndpoint, { data: { id: id } });
     } catch (error: any) {
       console.error("Error deleting address");
     }
@@ -77,7 +77,7 @@ export function User() {
     address: string;
   }) => {
     try {
-      await axios.post(addressUrl, {
+      await axios.post(addressApiEndpoint, {
         type,
         address,
       });
@@ -98,7 +98,7 @@ export function User() {
     address: string;
   }) => {
     try {
-      await axios.post(`${addressUrl}/update`, {
+      await axios.post(`${addressApiEndpoint}/update`, {
         id,
         type,
         address,

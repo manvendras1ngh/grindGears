@@ -13,6 +13,7 @@ import { Navbar } from "./Navbar";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { categoriesApiEndpoint } from "@/utils/apiRoute";
 
 type Category = {
   _id: string;
@@ -22,14 +23,13 @@ type Category = {
   description: string;
 };
 
-export const categoriesApiUrl = "http://localhost:5175/api/v1/categories";
 export function Landing() {
   const [categories, setCategories] = useState<Category[] | []>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(categoriesApiUrl);
+        const res = await axios.get(categoriesApiEndpoint);
         setCategories(res.data.data);
       } catch (error) {
         console.error("Error getting categeories", error);
