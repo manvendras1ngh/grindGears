@@ -1,6 +1,7 @@
 import { TbShoppingCartHeart } from "react-icons/tb";
-import { FaCartShopping } from "react-icons/fa6";
+import { FaCartShopping, FaGear } from "react-icons/fa6";
 import { CiMenuFries } from "react-icons/ci";
+import { FaRegUserCircle } from "react-icons/fa";
 
 import { Drawer, TextField } from "@mui/material";
 import { useState } from "react";
@@ -13,7 +14,11 @@ export function Navbar() {
   const drawerList = (
     <section className="my-4 mx-2 w-[220px] space-y-3">
       <div className="flex text-lg items-center space-x-4 border-b border-zinc-200 p-2 cursor-pointer">
-        <FaCartShopping />
+        <FaRegUserCircle />
+        <Link to="/user">My Profile</Link>
+      </div>
+      <div className="flex text-lg items-center space-x-4 border-b border-zinc-200 p-2 cursor-pointer">
+        <FaGear />
         <Link to="/products">All Gears</Link>
       </div>
       <div className="flex text-lg items-center space-x-4 border-b border-zinc-200 p-2 cursor-pointer">
@@ -41,7 +46,8 @@ export function Navbar() {
           />
         </div>
 
-        <div className="lg:flex items-center text-2xl gap-12 hidden cursor-pointer">
+        <div className="lg:flex items-center text-2xl gap-7 hidden cursor-pointer">
+          <FaRegUserCircle onClick={() => navigate("/user")} />
           <TbShoppingCartHeart onClick={() => navigate("/wishlist")} />
           <FaCartShopping onClick={() => navigate("/cart")} />
         </div>
