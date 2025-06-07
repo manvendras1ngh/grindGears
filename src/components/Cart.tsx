@@ -11,6 +11,7 @@ import { cartUpdateEndpoint } from "@/utils/apiRoute";
 export function Cart() {
   const {
     cartItems,
+    setCartItems,
     wishlistItems,
     handleAddToWishlist,
     handleRemoveFromCart,
@@ -18,6 +19,11 @@ export function Cart() {
 
   const handleQuantityChange = async (id: string, newQuantity: number) => {
     try {
+      setCartItems((prev) =>
+        prev.map((gear) =>
+          gear.id === id ? { ...gear, quantity: newQuantity } : gear
+        )
+      );
       const res = await axios.post(cartUpdateEndpoint, {
         gearId: id,
         quantity: newQuantity,
