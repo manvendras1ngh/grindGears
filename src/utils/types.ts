@@ -16,3 +16,9 @@ export type ProductData = {
 };
 
 export type CartItem = ProductData & { quantity: number };
+
+export interface Address {
+  _id: string;
+  addressType: string;
+  fullAddress: string;
+}

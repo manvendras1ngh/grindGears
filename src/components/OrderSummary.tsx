@@ -7,18 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import useStoreContext from "../contexts/CartContext";
-import type { CartItem } from "../utils/types";
+import type { Address, CartItem } from "../utils/types";
 import {
   addressApiEndpoint,
   clearCartApiEndpoint,
   orderApiEndpoint,
 } from "@/utils/apiRoute";
-
-interface Address {
-  _id: string;
-  addressType: string;
-  fullAddress: string;
-}
 
 export function OrderSummary() {
   const navigate = useNavigate();
