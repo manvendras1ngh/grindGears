@@ -16,7 +16,7 @@ import {
 
 export function OrderSummary() {
   const navigate = useNavigate();
-  const { cartItems } = useStoreContext();
+  const { cartItems, setCartItems } = useStoreContext();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
@@ -86,11 +86,10 @@ export function OrderSummary() {
 
       await axios.post(orderApiEndpoint, orderData);
 
-      toast.success("Order placed successfully!");
-
       setTimeout(async () => {
         await axios.delete(clearCartApiEndpoint);
         navigate("/products");
+        setCartItems([]);
       }, 3000);
     } catch (error: any) {
       const msg = error.response?.data?.message || "Failed to place order";
@@ -271,7 +270,13 @@ export function OrderSummary() {
 
               <div className="space-y-3">
                 <Button
-                  onClick={handlePlaceOrder}
+                  onClick={() =>
+                    toast.promise(handlePlaceOrder(), {
+                      loading: "Processing order",
+                      success: <b>Order placed successfully!</b>,
+                      error: <b>Order processing failed.</b>,
+                    })
+                  }
                   disabled={!selectedAddressId || isPlacingOrder}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
