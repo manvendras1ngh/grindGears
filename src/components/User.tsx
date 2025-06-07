@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { v4 as uuidv4 } from "uuid";
 
 import { Navbar } from "./Navbar";
 import { AddressForm } from "./AddressForm";
 import { addressApiEndpoint, orderApiEndpoint } from "@/utils/apiRoute";
-
+import type { Address } from "@/utils/types";
 interface Order {
   _id: string;
   gears: Array<{
@@ -17,11 +18,7 @@ interface Order {
     imageUrl: string;
   }>;
   totalAmount: number;
-  shippingAddress: {
-    _id: string;
-    addressType: string;
-    fullAddress: string;
-  };
+  shippingAddress: Address;
   createdAt: string;
 }
 
@@ -34,7 +31,7 @@ export function User() {
     avatar: "https://placehold.co/400x500/e2e8f0/1e293b?text=MS",
   };
 
-  const [address, setAddress] = useState([]);
+  const [address, setAddress] = useState<Address[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -58,9 +55,11 @@ export function User() {
 
   const handleDeleteAddress = async (id: string) => {
     try {
+      const deleteAddress = address.filter((add) => add._id !== id);
+      setAddress(deleteAddress);
       await axios.delete(addressApiEndpoint, { data: { id: id } });
     } catch (error: any) {
-      console.error("Error deleting address");
+      console.error("Error deleting address", error);
     }
   };
 
@@ -72,7 +71,17 @@ export function User() {
     type: string;
     address: string;
   }) => {
+    const addressId = uuidv4();
     try {
+      if (!type || !address) {
+        toast.error("Please provide address details");
+        return;
+      }
+      setAddress((prev) => [
+        ...prev,
+        { _id: addressId, addressType: type, fullAddress: address },
+      ]);
+
       await axios.post(addressApiEndpoint, {
         type,
         address,
@@ -94,6 +103,13 @@ export function User() {
     address: string;
   }) => {
     try {
+      setAddress((prev) => {
+        return prev.map((add) =>
+          add._id === id
+            ? { ...add, addressType: type, fullAddress: address }
+            : add
+        );
+      });
       await axios.post(`${addressApiEndpoint}/update`, {
         id,
         type,
@@ -176,7 +192,7 @@ export function User() {
 
           {orders.length > 0 ? (
             <div className="space-y-4">
-              {orders.map((order) => (
+              {orders?.map((order) => (
                 <div
                   key={order._id}
                   className="bg-white shadow-md rounded-lg border border-zinc-100 p-6"
@@ -219,8 +235,8 @@ export function User() {
                       Shipping Address
                     </p>
                     <p className="text-zinc-700">
-                      {order.shippingAddress.addressType} -{" "}
-                      {order.shippingAddress.fullAddress}
+                      {order.shippingAddress?.addressType} -{" "}
+                      {order.shippingAddress?.fullAddress}
                     </p>
                   </div>
 
@@ -261,7 +277,7 @@ export function User() {
           {address.map(({ _id: id, addressType, fullAddress }) => (
             <div
               key={id}
-              className="my-6 mx-2 flex items-center justify-between w-6xl bg-white shadow-md rounded-lg border border-zinc-100 p-8"
+              className="my-6 mx-2 flex items-center justify-between max-w-6xl bg-white shadow-md rounded-lg border border-zinc-100 p-8"
             >
               <div>
                 <p className="font-semibold py-2 text-zinc-800">
