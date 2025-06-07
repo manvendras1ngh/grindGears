@@ -69,8 +69,6 @@ export function OrderSummary() {
     (addr) => addr._id === selectedAddressId
   );
 
-  console.log(selectedAddress);
-
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
       toast.error("Please select a delivery address");

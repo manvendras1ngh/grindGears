@@ -61,8 +61,6 @@ export function Products() {
     sortBy: "none",
   });
 
-  console.log("product component");
-
   // Extract unique categories from productData
   const categories = useMemo(() => {
     const categorySet = new Set<string>();

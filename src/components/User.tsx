@@ -37,8 +37,6 @@ export function User() {
   const [address, setAddress] = useState([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  console.log(orders);
-
   useEffect(() => {
     (async () => {
       try {
@@ -57,8 +55,6 @@ export function User() {
       }
     })();
   }, []);
-
-  console.log("user component");
 
   const handleDeleteAddress = async (id: string) => {
     try {
