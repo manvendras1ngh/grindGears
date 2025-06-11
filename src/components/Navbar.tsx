@@ -3,7 +3,7 @@ import { FaCartShopping, FaGear } from "react-icons/fa6";
 import { CiMenuFries } from "react-icons/ci";
 import { FaRegUserCircle } from "react-icons/fa";
 
-import { Drawer, TextField } from "@mui/material";
+import { Drawer } from "@mui/material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -37,14 +37,6 @@ export function Navbar() {
         <h1 className="text-2xl font-semibold">
           <Link to="/">GrindGears</Link>
         </h1>
-        <div className="hidden lg:block">
-          <TextField
-            label="Search"
-            id="outlined-size-small"
-            size="small"
-            className="w-80"
-          />
-        </div>
 
         <div className="lg:flex items-center text-2xl gap-7 hidden cursor-pointer">
           <FaRegUserCircle onClick={() => navigate("/user")} />

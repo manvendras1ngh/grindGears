@@ -19,6 +19,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import { Input } from "@/components/ui/input";
 import { FaRegHeart, FaHeart } from "react-icons/fa6";
 import { RiMenuUnfold2Fill } from "react-icons/ri";
 import { FaCartPlus } from "react-icons/fa";
@@ -31,7 +32,7 @@ import type { ProductData } from "../utils/types";
 import useStoreContext from "../contexts/CartContext";
 
 import { Link } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ChangeEvent } from "react";
 import { RatingStars } from "./ProductDetail";
 import { useProductData } from "../hooks/useProductsData";
 
@@ -50,6 +51,7 @@ export function Products() {
   } = useStoreContext();
 
   const { productData, productDataLoading } = useProductData();
+  const [searchProducts, setSearchProducts] = useState<ProductData[]>([]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -136,6 +138,16 @@ export function Products() {
 
     return filtered;
   }, [filters, productData]);
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const gearToFind = e.target.value.trim();
+    const findGear = productData.filter(
+      (gear) =>
+        gear.brand.toLowerCase().includes(gearToFind) ||
+        gear.name.toLowerCase().includes(gearToFind)
+    );
+    setSearchProducts(findGear);
+  };
 
   const drawerWidth = 280;
 
@@ -330,7 +342,7 @@ export function Products() {
 
       {/* Main Content */}
       <div className="flex-1 p-4">
-        <div className="flex items-center mt-8">
+        <div className="flex items-center mt-8 justify-between">
           {isMobile && (
             <IconButton onClick={handleDrawerToggle} sx={{ mr: 2 }}>
               <RiMenuUnfold2Fill />
@@ -339,12 +351,21 @@ export function Products() {
           <h1 className="text-4xl font-light m-6">
             Precision gears for your next build
           </h1>
+          <Input
+            type="input"
+            placeholder="Search Gears"
+            onChange={(e) => handleSearchChange(e)}
+            className="max-w-xs"
+          />
         </div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 justify-items-center items-start gap-6">
           {productDataLoading
             ? "Gears Data Loading..."
-            : filteredAndSortedProducts.map((product) => productCard(product))}
+            : (searchProducts.length > 0
+                ? searchProducts
+                : filteredAndSortedProducts
+              ).map((product) => productCard(product))}
         </div>
 
         <Footer />
