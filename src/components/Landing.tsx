@@ -85,9 +85,9 @@ export function Landing() {
                   <Link to={`/products/${category.slug}`}>
                     <CardMedia
                       component="img"
-                      height="100"
                       image={category.imageUrl}
                       alt={category.name}
+                      className="max-h-[300px] object-contain"
                     />
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
