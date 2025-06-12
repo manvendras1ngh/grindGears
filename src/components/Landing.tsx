@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { categoriesApiEndpoint } from "@/utils/apiRoute";
+import { Skeleton } from "./ui/skeleton";
 
 type Category = {
   _id: string;
@@ -23,14 +24,29 @@ type Category = {
   description: string;
 };
 
+const CategorySkeletonLoader = () => {
+  return (
+    <div className="flex flex-col space-y-3">
+      <Skeleton className="h-[200px] w-[225px] rounded-xl" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[225px]" />
+        <Skeleton className="h-4 w-[225px]" />
+      </div>
+    </div>
+  );
+};
+
 export function Landing() {
   const [categories, setCategories] = useState<Category[] | []>([]);
+  const [categoriesLoading, SetCategoriesLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
+      SetCategoriesLoading(true);
       try {
         const res = await axios.get(categoriesApiEndpoint);
         setCategories(res.data.data);
+        SetCategoriesLoading(false);
       } catch (error) {
         console.error("Error getting categeories", error);
       }
@@ -75,35 +91,39 @@ export function Landing() {
 
         <div className="overflow-x-auto w-full">
           <div className="flex gap-5 mx-auto w-max">
-            {categories.map((category) => (
-              <Card
-                sx={{ width: 300 }}
-                className="flex-shrink-0"
-                key={category._id}
-              >
-                <CardActionArea>
-                  <Link to={`/products/${category.slug}`}>
-                    <CardMedia
-                      component="img"
-                      image={category.imageUrl}
-                      alt={category.name}
-                      className="max-h-[300px] object-contain"
-                    />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {category.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        {category.description}
-                      </Typography>
-                    </CardContent>
-                  </Link>
-                </CardActionArea>
-              </Card>
-            ))}
+            {categoriesLoading
+              ? Array(4)
+                  .fill(null)
+                  .map((_, i) => <CategorySkeletonLoader key={i} />)
+              : categories.map((category) => (
+                  <Card
+                    sx={{ width: 300 }}
+                    className="flex-shrink-0"
+                    key={category._id}
+                  >
+                    <CardActionArea>
+                      <Link to={`/products/${category.slug}`}>
+                        <CardMedia
+                          component="img"
+                          image={category.imageUrl}
+                          alt={category.name}
+                          className="max-h-[300px] object-contain"
+                        />
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="div">
+                            {category.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            {category.description}
+                          </Typography>
+                        </CardContent>
+                      </Link>
+                    </CardActionArea>
+                  </Card>
+                ))}
           </div>
         </div>
       </div>
