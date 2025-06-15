@@ -117,7 +117,7 @@ export function ProductDetail() {
                     )}
                   </button>
                   <img
-                    src={`https://placehold.co/400x500/e2e8f0/1e293b?text=${product.name}`}
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-[500px] object-cover"
                   />

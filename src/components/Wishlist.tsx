@@ -40,7 +40,7 @@ export function Wishlist() {
             <CardMedia
               component="img"
               height="140"
-              image="https://placehold.co/300x400"
+              image={data.image}
               className="object-cover h-[200px]"
               alt={data.name}
             />
